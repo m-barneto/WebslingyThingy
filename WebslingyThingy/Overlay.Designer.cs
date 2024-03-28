@@ -1,5 +1,5 @@
 ﻿namespace WebslingyThingy {
-    partial class Form1 {
+    partial class Overlay {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -24,12 +24,37 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
+            this.engineTimer = new System.Windows.Forms.Timer(this.components);
+            this.SuspendLayout();
+            // 
+            // engineTimer
+            // 
+            this.engineTimer.Enabled = true;
+            this.engineTimer.Interval = 1;
+            this.engineTimer.Tick += new System.EventHandler(this.engineTimer_Tick);
+            // 
+            // Overlay
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Wheat;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ControlBox = false;
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "Overlay";
+            this.ShowInTaskbar = false;
+            this.Text = "WebslingyThingy";
+            this.TopMost = true;
+            this.TransparencyKey = System.Drawing.Color.Wheat;
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer engineTimer;
     }
 }
 
