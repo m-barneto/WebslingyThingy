@@ -119,5 +119,6 @@
   <ItemGroup>
     <None Include="Animations\SpiderWalkRight.gif" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

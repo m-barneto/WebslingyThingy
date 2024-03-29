@@ -2,65 +2,116 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WebslingyThingy {
     internal class Spider {
-        PictureBox pb;
-        Vector2f pos, vel, acc;
-        bool isDragging = false;
-        Vector2f mouseOffset = Vector2f.Zero;
+        [DllImport("User32.dll")]
+        public static extern IntPtr GetDC(IntPtr hwnd);
+        [DllImport("User32.dll")]
+        public static extern void ReleaseDC(IntPtr hwnd, IntPtr dc);
 
-
-
-        public Spider() {
-            pos = vel = acc = new Vector2f(0f, 0f);
+        enum State {
+            IDLE,
+            WALKING,
         }
 
-        public void Start(PictureBox pb) {
+        enum Direction {
+            LEFT,
+            RIGHT
+        }
+        enum Orientation {
+            UP,
+            DOWN
+        }
+
+
+        const float PADDING = 90f;
+
+        State currentState;
+        Direction currentDirection;
+        Orientation currentOrientation;
+
+        PictureBox pb;
+        public Vector2f pos, vel, acc;
+        public Vector2f prevPos;
+        bool isDragging = false;
+        Vector2f mouseOffset;
+        Rectangle bounds;
+
+        public Spider() {
+            currentState = State.IDLE;
+            currentDirection = Direction.RIGHT;
+            currentOrientation = Orientation.DOWN;
+
+            mouseOffset = new Vector2f(0f, 0f);
+            pos = new Vector2f(0f, 0f);
+            prevPos = new Vector2f(0f, 0f);
+            vel = new Vector2f(0f, 0f);
+            acc = new Vector2f(0f, 0f);
+        }
+
+        public Point GetAnchor() {
+            Point p = pb.Location;
+            p.X += pb.Width / 2;
+
+
+            if (currentOrientation == Orientation.UP) {
+                p.Y += pb.Height;
+            }
+
+            return p;
+
+        }
+
+        public void Start(PictureBox pb, Rectangle bounds) {
+            this.bounds = bounds;
             this.pb = pb;
+            this.pb.Image = Properties.Resources.SpiderIdleRight;
         }
 
         public void Update(float dt) {
-            dt = .1f;
+            if (Form.ActiveForm == null) return;
             if (isDragging) {
                 Vector2f off = new Vector2f(Cursor.Position.X - (mouseOffset.x + pos.x), Cursor.Position.Y - (mouseOffset.y + pos.y));
-                acc += off / 50f;
-
-                //if (off.Magnitude() > 400f) isDragging = false;
-
-            } else {
-                //Apply gravity
-                //acc += new Vector2f(0f, 1f);
+                acc += off * 10f;
             }
 
-            // apply drag
-            Vector2f dragForce = vel * -Physics.DRAG;
-            acc += dragForce;
 
-            var t = vel * dt;
-            var r = acc * .5f;
-            var q = r * dt;
-            var f = q * dt;
-
-            pos += t + f;
-            vel += acc * dt;
-
+            acc += Physics.GRAVITY;
 
             // Apply acc to vel
-            //pos += vel * dt;
-            //vel += acc * dt;
-            //pos += vel * dt + acc * dt * dt * 0.5f;
+            vel += acc * dt;
+            pos += vel * dt;
 
-            //vel *= Physics.DRAG;
+            vel *= Physics.FRICTION;
 
-            //acc = Vector2f.Zero;
-            /*vel += acc;
-            pos += vel;
-            acc *= 0.6f;
-            vel *= 0.9f;*/
+            acc = new Vector2f(0f, 0f);
+
+            if (pos.y + pb.Height > bounds.Height) {
+                pos.y = bounds.Height - pb.Height;
+            }
+
+            if (pos.x < -PADDING) {
+                pos.x = -PADDING;
+            }
+
+            if (pos.x > bounds.Width - PADDING) {
+                pos.x = bounds.Width - PADDING;
+            }
+
+            IntPtr desktopPtr = GetDC(IntPtr.Zero);
+            Graphics g = Graphics.FromHdc(desktopPtr);
+
+            SolidBrush b = new SolidBrush(Color.White);
+            //g.FillRectangle(b, new Rectangle(GetAnchor(), new Size(16, 15)));
+
+            g.Dispose();
+            ReleaseDC(IntPtr.Zero, desktopPtr);
+
             this.pb.Location = new Point((int)pos.x, (int)pos.y);
         }
 

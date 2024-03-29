@@ -42,6 +42,7 @@
             this.pbSpider.Location = new System.Drawing.Point(0, 0);
             this.pbSpider.Name = "pbSpider";
             this.pbSpider.Size = new System.Drawing.Size(256, 256);
+            this.pbSpider.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pbSpider.TabIndex = 0;
             this.pbSpider.TabStop = false;
             this.pbSpider.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MouseDownEvent);

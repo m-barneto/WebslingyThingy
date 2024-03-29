@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace WebslingyThingy {
@@ -8,21 +9,20 @@ namespace WebslingyThingy {
         MOVE
     }
     public partial class Overlay : Form {
+        Stopwatch sw;
 
         Spider spider;
         public Overlay() {
             InitializeComponent();
             spider = new Spider();
-            
+            sw = Stopwatch.StartNew();
         }
 
         private void MouseDownEvent(object sender, MouseEventArgs e) {
-            Console.WriteLine("Down");
             spider.MouseEvent(MouseEventType.DOWN, e);
         }
 
         private void MouseUpEvent(object sender, MouseEventArgs e) {
-            Console.WriteLine("Up");
             spider.MouseEvent(MouseEventType.UP, e);
         }
 
@@ -31,11 +31,12 @@ namespace WebslingyThingy {
         }
 
         private void engineTimer_Tick(object sender, EventArgs e) {
-            spider.Update(1f / engineTimer.Interval);
+            spider.Update((float)sw.Elapsed.TotalSeconds);
+            sw.Restart();
         }
 
         private void Overlay_Load(object sender, EventArgs e) {
-            spider.Start(pbSpider);
+            spider.Start(pbSpider, Bounds);
         }
     }
 }

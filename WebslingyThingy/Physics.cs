@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebslingyThingy {
     internal class Physics {
-        public const float DRAG = .1f;
+        public static readonly Vector2f GRAVITY = new Vector2f(0f, 2000f);
+        public const float FRICTION = .99f;
     }
 }
